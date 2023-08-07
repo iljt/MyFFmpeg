@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         // rtmp://58.200.131.2:1935/livetv/hunantv
         //m3u8地址可以播放
          player.setDataSource("http://recordcdn.quklive.com/upload/vod/user1462960877450854/1527512379701708/3/video.m3u8");
-
         // 还不支持 rtsp
         // rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
         // player.setDataSource("rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov");
@@ -156,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                                         getMinutes(duration) + ":" + getSeconds(duration));
 
                                 // TODO 拖动条 动起来 seekBar相对于总时长的百分比
+
                                 // progress == C++层的 音频时间搓  ----> seekBar的百分比
                                 // seekBar.setProgress(progress * 100 / duration 以秒计算seekBar相对总时长的百分比);
                                 seekBar.setProgress(progress * 100 / duration);
