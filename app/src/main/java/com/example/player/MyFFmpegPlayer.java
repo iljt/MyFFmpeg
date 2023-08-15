@@ -1,5 +1,6 @@
 package com.example.player;
 
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -54,6 +55,8 @@ public class MyFFmpegPlayer implements SurfaceHolder.Callback {
 
     public void setDataSource(String dataSource) {
         this.dataSource = dataSource;
+        double aspRatio=getAspRatio(dataSource);
+        Log.e("aspRatio= "," aspRatio= "+aspRatio);
     }
 
     /**
@@ -62,6 +65,15 @@ public class MyFFmpegPlayer implements SurfaceHolder.Callback {
     public void prepare() {
         prepareNative(dataSource);
     }
+
+    /**
+     * 获取视频宽高比
+     */
+    public double getAspRatio(String dataSource_) {
+       double aspectRatio=getAspectRatio(dataSource_);
+       return aspectRatio;
+    }
+
 
     /**
      * 开始播放
@@ -216,6 +228,7 @@ public class MyFFmpegPlayer implements SurfaceHolder.Callback {
 
     // TODO >>>>>>>>>>> 下面是native函数区域
     private native void prepareNative(String dataSource);
+    private native double getAspectRatio(String dataSource);
     private native void startNative();
     private native void stopNative();
     private native void releaseNative();

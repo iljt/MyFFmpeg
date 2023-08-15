@@ -173,3 +173,40 @@ Java_com_example_player_MyFFmpegPlayer_seekNative(JNIEnv *env, jobject thiz, jin
         player->seek(play_value);
     }
 }
+
+
+extern "C"
+JNIEXPORT jdouble JNICALL
+Java_com_example_player_MyFFmpegPlayer_getAspectRatio(JNIEnv *env, jobject thiz,
+                                                      jstring data_source) {
+    const char *path = env->GetStringUTFChars(data_source, 0);
+
+    av_register_all();
+    AVFormatContext *formatContext = avformat_alloc_context();
+    if (avformat_open_input(&formatContext, path, NULL, NULL) != 0) {
+        // 处理打开文件失败的情况
+        return -1;
+    }
+
+    int videoStreamIndex = -1;
+    for (int i = 0; i < formatContext->nb_streams; i++) {
+        if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+            videoStreamIndex = i;
+            break;
+        }
+    }
+
+    if (videoStreamIndex == -1) {
+        // 没有找到视频流
+        return -1;
+    }
+
+    double aspectRatio = (double) formatContext->streams[videoStreamIndex]->codecpar->width /
+                         formatContext->streams[videoStreamIndex]->codecpar->height;
+
+    avformat_close_input(&formatContext);
+    env->ReleaseStringUTFChars(data_source, path);
+
+    return aspectRatio;
+
+}

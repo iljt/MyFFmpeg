@@ -19,12 +19,17 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
@@ -35,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private MyFFmpegPlayer player;
     private TextView tv_state;
     private SurfaceView surfaceView;
-
     // TODO 第七次增加
     // 直播视频是没有拖动条的（直播是没有总时长）（隐藏），  若非直播的视频文件才有拖动条（视频文件是有总时长）（显示）
     private SeekBar seekBar;
@@ -48,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     public static final int RC_READ_EXTERNAL_STORAGE = 1; // requestCode
+    private double aspectRatio;
 
 
     @Override
@@ -76,13 +81,22 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         //  湖南卫视直播地址播放  地址失效
         // rtmp://58.200.131.2:1935/livetv/hunantv
         //m3u8地址可以播放
-         player.setDataSource("http://recordcdn.quklive.com/upload/vod/user1462960877450854/1527512379701708/3/video.m3u8");
+         String segmentUrl ="http://recordcdn.quklive.com/upload/vod/user1462960877450854/1527512379701708/3/video.m3u8";
+         player.setDataSource(segmentUrl);
         // 还不支持 rtsp
         // rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
         // player.setDataSource("rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov");
 
         // https://stream7.iqilu.com/10339/upload_transcode/202002/18/20200218114723HDu3hhxqIT.mp4
         // player.setDataSource("https://stream7.iqilu.com/10339/upload_transcode/202002/18/20200218114723HDu3hhxqIT.mp4");
+        new Handler().postDelayed(() -> {
+            float videoAspectRatio =  16.0f / 9.0f; // 根据你的视频获取宽高比数据
+            ViewGroup.LayoutParams layoutParams = surfaceView.getLayoutParams();
+            layoutParams.width =surfaceView.getWidth(); // 设置宽度为满屏
+            layoutParams.height = (int) (layoutParams.width / videoAspectRatio); // 根据宽高比计算高度
+            Log.e("xxx= "," width= "+layoutParams.width + " hieght= "+layoutParams.height);
+            surfaceView.setLayoutParams(layoutParams);
+        },300);
 
         // 准备成功的回调处    <----  C++ 子线程调用的
         player.setOnPreparedListener(new MyFFmpegPlayer.OnPreparedListener() {
@@ -96,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         //  第七次增加
                         if (duration != 0) {
 
